@@ -24,7 +24,8 @@ const AdminDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/dashboard-stats`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setStats(response.data.stats);
       setLoading(false);
@@ -38,7 +39,8 @@ const AdminDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/detailed-user-data`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setDetailedData(response.data);
     } catch (error) {
@@ -50,7 +52,8 @@ const AdminDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/trigger-automation`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       alert('Automation triggered successfully!');
       fetchStats();
@@ -458,7 +461,8 @@ const UserDataTable = ({ title, data, showSignature, showWorkStatus, onRefresh }
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/password`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setUserPassword(response.data.password);
       setSelectedUser({ id: userId, name: userName });
@@ -476,7 +480,10 @@ const UserDataTable = ({ title, data, showSignature, showWorkStatus, onRefresh }
       const token = localStorage.getItem('token');
       await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/penalize`,
         { reason },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
+        }
       );
       alert(`${userName} has been penalized successfully!`);
       onRefresh();
@@ -612,7 +619,8 @@ const SubmittedWorkTable = ({ title, data, onRefresh }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/work`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setSelectedWork({ userName: userName, ...response.data });
       setShowWorkModal(true);
@@ -629,7 +637,10 @@ const SubmittedWorkTable = ({ title, data, onRefresh }) => {
       const token = localStorage.getItem('token');
       await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/penalize`,
         { reason },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
+        }
       );
       alert(`${userName} has been penalized successfully!`);
       onRefresh();
@@ -771,7 +782,8 @@ const PenalizedWorkTable = ({ title, data, onRefresh }) => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/remove-penalty`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       alert(`Penalty removed from ${userName} successfully!`);
       onRefresh();

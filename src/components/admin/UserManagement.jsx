@@ -29,7 +29,8 @@ const UserManagement = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/users`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setUsers(response.data.users);
       setLoading(false);
@@ -45,7 +46,8 @@ const UserManagement = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/users`, newUser, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
 
       alert('User created successfully! OTP sent to email.');
@@ -68,7 +70,8 @@ const UserManagement = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}`, updates, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
 
       alert('User updated successfully!');
@@ -86,7 +89,8 @@ const UserManagement = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
 
       alert('User deleted successfully!');
@@ -100,7 +104,8 @@ const UserManagement = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/send-otp`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
 
       alert(`OTP sent to ${userName} successfully!`);
@@ -113,7 +118,8 @@ const UserManagement = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/send-agreement`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
 
       alert(`Agreement link and OTP sent to ${userName} successfully!`);
@@ -126,7 +132,8 @@ const UserManagement = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/password`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setUserPassword(response.data.password);
       setSelectedUser({ id: userId, name: userName });
@@ -144,7 +151,10 @@ const UserManagement = () => {
       const token = localStorage.getItem('token');
       await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/penalize`,
         { reason },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { 
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
+        }
       );
       alert(`${userName} has been penalized successfully!`);
       fetchUsers();
@@ -159,7 +169,8 @@ const UserManagement = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/remove-penalty`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       alert(`Penalty removed from ${userName} successfully!`);
       fetchUsers();

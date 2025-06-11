@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       console.log('AuthContext: Making registration API call to:', `${import.meta.env.VITE_API_URL}/api/auth/register`);
       console.log('AuthContext: Registration data:', userData);
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, userData);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, userData, { withCredentials: true });
       console.log('AuthContext: Registration API response:', response);
       setLoading(false);
       return response.data;
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       console.log('AuthContext: Making OTP verification API call');
       console.log('AuthContext: Email:', email, 'OTP:', otp);
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/verify-otp`, { email, otp });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/verify-otp`, { email, otp }, { withCredentials: true });
       console.log('AuthContext: OTP verification response:', response);
       setLoading(false);
       return response.data;
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setLoading(true);
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, { email, password });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, { email, password }, { withCredentials: true });
 
       const { token, user } = response.data;
 
@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }) => {
   const adminLogin = async (email, password) => {
     try {
       setLoading(true);
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/admin-login`, { email, password });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/admin-login`, { email, password }, { withCredentials: true });
 
       const { token, user } = response.data;
 
@@ -109,7 +109,10 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/auth/sign-agreement`,
         { signature },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { 
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true 
+        }
       );
 
       const { token: newToken, user } = response.data;

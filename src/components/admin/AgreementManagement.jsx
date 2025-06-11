@@ -19,7 +19,8 @@ const AgreementManagement = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/agreements`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setAgreements(response.data.agreements);
       setLoading(false);
@@ -41,7 +42,10 @@ const AgreementManagement = () => {
       const token = localStorage.getItem('token');
       await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/agreements`, 
         { content: newAgreementContent },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { 
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true 
+        }
       );
       
       alert('Agreement created successfully!');
@@ -58,7 +62,10 @@ const AgreementManagement = () => {
       const token = localStorage.getItem('token');
       await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/agreements/${agreementId}`, 
         { content },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { 
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true 
+        }
       );
       
       alert('Agreement updated successfully!');
@@ -77,7 +84,8 @@ const AgreementManagement = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/agreements/${agreementId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       
       alert('Agreement deleted successfully!');

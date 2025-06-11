@@ -25,7 +25,8 @@ const UserProfile = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       
       const user = response.data.user;
@@ -82,7 +83,10 @@ const UserProfile = () => {
           mobileNumber: profile.mobileNumber,
           alternativeMobileNumber: profile.alternativeMobileNumber
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { 
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true 
+        }
       );
       
       setSuccess('Profile updated successfully!');

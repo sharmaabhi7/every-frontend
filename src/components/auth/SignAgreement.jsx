@@ -13,14 +13,17 @@ const SignAgreement = () => {
   const { token } = useParams();
   const navigate = useNavigate();
   const sigCanvas = useRef();
-  
+
   useEffect(() => {
     fetchAgreement();
   }, []);
-  
+
   const fetchAgreement = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/agreement`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/agreement`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        withCredentials: true
+      });
       setAgreement(response.data.agreement.content);
       setLoading(false);
     } catch (error) {
@@ -28,19 +31,19 @@ const SignAgreement = () => {
       setLoading(false);
     }
   };
-  
+
   const clearSignature = () => {
     sigCanvas.current.clear();
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (sigCanvas.current.isEmpty()) {
       setError('Please provide your signature');
       return;
     }
-    
+
     try {
       setSigning(true);
       const signatureData = sigCanvas.current.toDataURL();
@@ -52,7 +55,7 @@ const SignAgreement = () => {
       setSigning(false);
     }
   };
-  
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -63,7 +66,7 @@ const SignAgreement = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -72,7 +75,7 @@ const SignAgreement = () => {
             <h1 className="text-2xl font-bold text-white">Agreement Signing</h1>
             <p className="text-indigo-100">Please read the agreement carefully and provide your digital signature</p>
           </div>
-          
+
           <div className="p-6">
             {/* Agreement Content */}
             <div className="mb-8">
@@ -83,7 +86,7 @@ const SignAgreement = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Signature Section */}
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-4">Digital Signature</h3>
@@ -108,13 +111,13 @@ const SignAgreement = () => {
                 </div>
               </div>
             </div>
-            
+
             {error && (
               <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
                 {error}
               </div>
             )}
-            
+
             {/* Submit Button */}
             <div className="flex justify-end space-x-4">
               <button

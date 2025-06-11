@@ -19,7 +19,8 @@ const ViewAgreement = () => {
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/get-agreement/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setAgreement(response.data.agreement);
     } catch (error) {

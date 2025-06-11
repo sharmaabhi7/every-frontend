@@ -18,7 +18,8 @@ const SignedAgreements = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/signed-agreements`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setSignedAgreements(response.data.signedAgreements);
       setLoading(false);
@@ -32,7 +33,8 @@ const SignedAgreements = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/signed-agreements/${agreementId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setSelectedAgreement(response.data.signedAgreement);
       setShowModal(true);
@@ -47,7 +49,8 @@ const SignedAgreements = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/signed-agreements/${agreementId}/send-pdf`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       alert(`Signed agreement PDF sent to ${userName} successfully!`);
     } catch (error) {

@@ -49,7 +49,8 @@ const WorkEditor = () => {
       console.log('WorkEditor: Token found:', !!token);
 
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/work/draft`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
 
       console.log('WorkEditor: Draft response:', response.data);
@@ -72,7 +73,8 @@ const WorkEditor = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
 
       const { workStatus, timeRemaining: remaining } = response.data;
@@ -90,7 +92,8 @@ const WorkEditor = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
 
       setTimeRemaining(response.data.timeRemaining);
@@ -112,7 +115,10 @@ const WorkEditor = () => {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/work/save-draft`,
         { content },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { 
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true 
+        }
       );
 
       setLastSaved(response.data.work.lastSaved);
@@ -146,7 +152,10 @@ const WorkEditor = () => {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/work/submit`,
         { content },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { 
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true 
+        }
       );
 
       const { message, reviewDeadline } = response.data;

@@ -24,7 +24,8 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setDashboardData(response.data);
       setLoading(false);
@@ -58,7 +59,8 @@ const Dashboard = () => {
         projectLink: workFormData.projectLink,
         password: workFormData.password
       }, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
 
       alert('Work started successfully! Admin has been notified.');
