@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import PDFViewer from '../work/PDFViewer';
 import axios from 'axios';
 
 const Dashboard = () => {
@@ -8,6 +9,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showStartWorkModal, setShowStartWorkModal] = useState(false);
+  const [showPDFViewer, setShowPDFViewer] = useState(false);
   const [workFormData, setWorkFormData] = useState({
     projectLink: '',
     password: ''
@@ -46,11 +48,16 @@ const Dashboard = () => {
     });
   };
 
-  const startWork = async () => {
+  const handleContinueToWork = () => {
     if (!workFormData.projectLink || !workFormData.password) {
       alert('Please fill in both project link and password');
       return;
     }
+    setShowStartWorkModal(false);
+    setShowPDFViewer(true);
+  };
+
+  const startWork = async () => {
 
     try {
       setSubmittingWork(true);
@@ -310,17 +317,41 @@ const Dashboard = () => {
                     <p className="text-gray-600 mb-4">
                       Congratulations! You have successfully submitted your work.
                     </p>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                      <h5 className="text-sm font-medium text-blue-900 mb-2">📋 Review Process</h5>
-                      <p className="text-sm text-blue-700">
-                        Your work will be reviewed within 24 hours. You will be notified of the results.
-                      </p>
-                      {dashboardData.work?.submittedAt && (
-                        <p className="text-xs text-blue-600 mt-2">
-                          Review deadline: {new Date(new Date(dashboardData.work.submittedAt).getTime() + (24 * 60 * 60 * 1000)).toLocaleString()}
+                    {/* Show accuracy results if available */}
+                    {user?.hasAccuracyResult && user?.accuracyResult ? (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-4">
+                        <h5 className="text-lg font-semibold text-blue-900 mb-3">📊 Accuracy Results</h5>
+                        <div className="grid grid-cols-3 gap-4 text-center">
+                          <div className="bg-white rounded-lg p-3">
+                            <div className="text-2xl font-bold text-green-600">{user.accuracyResult.correct}</div>
+                            <div className="text-sm text-gray-600">Correct</div>
+                          </div>
+                          <div className="bg-white rounded-lg p-3">
+                            <div className="text-2xl font-bold text-red-600">{user.accuracyResult.wrong}</div>
+                            <div className="text-sm text-gray-600">Wrong</div>
+                          </div>
+                          <div className="bg-white rounded-lg p-3">
+                            <div className="text-3xl font-bold text-blue-600">{user.accuracyResult.percentage}%</div>
+                            <div className="text-sm text-gray-600">Accuracy</div>
+                          </div>
+                        </div>
+                        <div className="mt-4 text-sm text-blue-700">
+                          Reviewed on: {new Date(user.accuracyResult.reviewedAt).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                        <h5 className="text-sm font-medium text-blue-900 mb-2">📋 Review Process</h5>
+                        <p className="text-sm text-blue-700">
+                          Your work will be reviewed within 24 hours. You will be notified of the results.
                         </p>
-                      )}
-                    </div>
+                        {dashboardData.work?.submittedAt && (
+                          <p className="text-xs text-blue-600 mt-2">
+                            Review deadline: {new Date(new Date(dashboardData.work.submittedAt).getTime() + (24 * 60 * 60 * 1000)).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    )}
                     <div className="text-sm text-gray-500">
                       Submitted on: {new Date(dashboardData.work?.submittedAt).toLocaleDateString()}
                     </div>
@@ -410,17 +441,27 @@ const Dashboard = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={startWork}
+                  onClick={handleContinueToWork}
                   disabled={submittingWork || !workFormData.projectLink || !workFormData.password}
                   className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50"
                 >
-                  {submittingWork ? 'Starting...' : 'Start Work'}
+                  {submittingWork ? 'Starting...' : 'Continue'}
                 </button>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* PDF Viewer Modal */}
+      <PDFViewer
+        isOpen={showPDFViewer}
+        onClose={() => {
+          setShowPDFViewer(false);
+          setShowStartWorkModal(true);
+        }}
+        onStartWork={startWork}
+      />
     </div>
   );
 };

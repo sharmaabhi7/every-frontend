@@ -14,6 +14,7 @@ const Register = () => {
 
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const { register, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -40,6 +41,10 @@ const Register = () => {
 
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    if (!agreeToTerms) {
+      newErrors.terms = 'You must agree to the Terms and Conditions';
     }
 
     setErrors(newErrors);
@@ -209,6 +214,27 @@ const Register = () => {
             </div>
           </div>
 
+          {/* Terms and Conditions Checkbox */}
+          <div className="flex items-center">
+            <input
+              id="agreeToTerms"
+              name="agreeToTerms"
+              type="checkbox"
+              checked={agreeToTerms}
+              onChange={(e) => setAgreeToTerms(e.target.checked)}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label htmlFor="agreeToTerms" className="ml-2 block text-sm text-gray-900">
+              I agree to the{' '}
+              <a href="#" className="text-indigo-600 hover:text-indigo-500 font-medium">
+                Terms and Conditions
+              </a>
+            </label>
+          </div>
+          {errors.terms && (
+            <p className="text-sm text-red-600">{errors.terms}</p>
+          )}
+
           {submitError && (
             <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded-md">
               {submitError}
@@ -218,8 +244,8 @@ const Register = () => {
           <div>
             <button
               type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              disabled={loading || !agreeToTerms}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Registering...' : 'Register'}
             </button>

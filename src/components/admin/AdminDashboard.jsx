@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
+import GlobalSearch from './GlobalSearch';
 import axios from 'axios';
 
 const AdminDashboard = () => {
@@ -125,6 +126,16 @@ const AdminDashboard = () => {
               <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
               <p className="text-gray-600">Welcome back, {user?.name}!</p>
             </div>
+
+            {/* Global Search */}
+            <div className="flex-1 max-w-lg mx-8">
+              <GlobalSearch
+                onUserSelect={(user) => {
+                  // Navigate to user management with selected user
+                  navigate('/admin/users', { state: { selectedUser: user } });
+                }}
+              />
+            </div>
             <div className="flex items-center space-x-4">
               {/* Real-time connection status */}
               <div className="flex items-center space-x-2">
@@ -207,6 +218,18 @@ const AdminDashboard = () => {
                 className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
               >
                 Signed Agreements
+              </button>
+              <button
+                onClick={() => navigate('/admin/site-config')}
+                className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+              >
+                Site Config
+              </button>
+              <button
+                onClick={() => navigate('/admin/pdfs')}
+                className="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
+              >
+                PDF Management
               </button>
               <button
                 onClick={handleLogout}
@@ -345,6 +368,36 @@ const AdminDashboard = () => {
                         <div className="text-2xl mb-2">📤</div>
                         <div className="font-medium">Submitted Work</div>
                         <div className="text-sm text-gray-500">View all submissions</div>
+                      </button>
+                    </div>
+
+                    {/* Additional Management Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+                      <button
+                        onClick={() => navigate('/admin/site-config')}
+                        className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-center"
+                      >
+                        <div className="text-2xl mb-2">⚙️</div>
+                        <div className="font-medium">Site Configuration</div>
+                        <div className="text-sm text-gray-500">Manage navbar & footer</div>
+                      </button>
+
+                      <button
+                        onClick={() => navigate('/admin/pdfs')}
+                        className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-center"
+                      >
+                        <div className="text-2xl mb-2">📄</div>
+                        <div className="font-medium">PDF Management</div>
+                        <div className="text-sm text-gray-500">Upload & manage PDFs</div>
+                      </button>
+
+                      <button
+                        onClick={() => setActiveTab('signed-agreements')}
+                        className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-center"
+                      >
+                        <div className="text-2xl mb-2">📝</div>
+                        <div className="font-medium">View Signatures</div>
+                        <div className="text-sm text-gray-500">See user signatures</div>
                       </button>
                     </div>
                   </div>

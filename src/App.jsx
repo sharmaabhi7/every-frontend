@@ -20,6 +20,8 @@ import AdminDashboard from './components/admin/AdminDashboard'
 import UserManagement from './components/admin/UserManagement'
 import AgreementManagement from './components/admin/AgreementManagement'
 import SignedAgreements from './components/admin/SignedAgreements'
+import SiteConfigManagement from './components/admin/SiteConfigManagement'
+import PDFManagement from './components/admin/PDFManagement'
 
 // Landing Page
 import LandingPage from './components/landing/LandingPage'
@@ -27,6 +29,7 @@ import LandingPage from './components/landing/LandingPage'
 // Context
 import { AuthProvider } from './context/AuthContext'
 import { SocketProvider } from './context/SocketContext'
+import { SiteConfigProvider } from './context/SiteConfigContext'
 
 // Protected Routes
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -46,10 +49,11 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 function App() {
   return (
-    <AuthProvider>
-      <SocketProvider>
-        <Router>
-          <div className="App">
+    <SiteConfigProvider>
+      <AuthProvider>
+        <SocketProvider>
+          <Router>
+            <div className="App">
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
@@ -127,14 +131,31 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/site-config"
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <SiteConfigManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/pdfs"
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <PDFManagement />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Catch all route */}
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
           </div>
-        </Router>
-      </SocketProvider>
-    </AuthProvider>
+          </Router>
+        </SocketProvider>
+      </AuthProvider>
+    </SiteConfigProvider>
   )
 }
 

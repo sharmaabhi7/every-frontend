@@ -11,6 +11,9 @@ const WorkEditor = () => {
   const [lastSaved, setLastSaved] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [pdfs, setPdfs] = useState([]);
+  const [selectedPDF, setSelectedPDF] = useState(null);
+  const [showPDFSidebar, setShowPDFSidebar] = useState(false);
   const navigate = useNavigate();
   const autoSaveRef = useRef();
 
@@ -18,6 +21,7 @@ const WorkEditor = () => {
     console.log('WorkEditor: Component mounted, loading draft and checking work status');
     loadDraft();
     checkWorkStatus();
+    loadPDFs();
 
     // Auto-save every 30 seconds
     autoSaveRef.current = setInterval(() => {
@@ -66,6 +70,22 @@ const WorkEditor = () => {
     } catch (error) {
       console.error('WorkEditor: Failed to load draft:', error);
       setLoading(false);
+    }
+  };
+
+  const loadPDFs = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/work/pdfs`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
+        }
+      );
+      setPdfs(response.data.pdfs || []);
+    } catch (error) {
+      console.error('Error fetching PDFs:', error);
     }
   };
 
@@ -222,6 +242,19 @@ const WorkEditor = () => {
                 </span>
               )}
 
+              {pdfs.length > 0 && (
+                <button
+                  onClick={() => setShowPDFSidebar(!showPDFSidebar)}
+                  className={`px-4 py-2 rounded ${
+                    showPDFSidebar
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  📄 PDFs ({pdfs.length})
+                </button>
+              )}
+
               <button
                 onClick={() => navigate('/dashboard')}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800"
@@ -256,21 +289,72 @@ const WorkEditor = () => {
       {/* Editor */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="bg-white shadow rounded-lg">
-            <div className="p-6">
-              {isReadOnly && (
-                <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
-                  This work is in read-only mode. {timeRemaining <= 0 ? 'The deadline has passed.' : 'Work has been submitted.'}
+          <div className="flex gap-6">
+            {/* PDF Sidebar */}
+            {showPDFSidebar && pdfs.length > 0 && (
+              <div className="w-1/3 bg-white shadow rounded-lg">
+                <div className="p-4 border-b border-gray-200">
+                  <h3 className="text-lg font-medium text-gray-900">Reference Documents</h3>
                 </div>
-              )}
+                <div className="p-4">
+                  <div className="space-y-2 mb-4 max-h-32 overflow-y-auto">
+                    {pdfs.map((pdf) => (
+                      <button
+                        key={pdf._id}
+                        onClick={() => setSelectedPDF(pdf)}
+                        className={`w-full text-left p-2 rounded border ${
+                          selectedPDF?._id === pdf._id
+                            ? 'border-indigo-500 bg-indigo-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="text-sm font-medium text-gray-900 truncate">
+                          {pdf.title}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {(pdf.fileSize / 1024 / 1024).toFixed(2)} MB
+                        </div>
+                      </button>
+                    ))}
+                  </div>
 
-              <QuillEditor
-                value={content}
-                onChange={setContent}
-                readOnly={isReadOnly}
-                style={{ height: '500px', marginBottom: '50px' }}
-                placeholder={isReadOnly ? '' : 'Start writing your work here...'}
-              />
+                  {selectedPDF && (
+                    <div className="border border-gray-300 rounded">
+                      <iframe
+                        src={`${import.meta.env.VITE_API_URL}/userpdf/${selectedPDF.filename}`}
+                        className="w-full h-96"
+                        title={selectedPDF.title}
+                      />
+                    </div>
+                  )}
+
+                  {!selectedPDF && (
+                    <div className="text-center py-8 text-gray-500">
+                      <div className="text-2xl mb-2">📄</div>
+                      <p className="text-sm">Select a document to view</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Editor */}
+            <div className={`${showPDFSidebar && pdfs.length > 0 ? 'w-2/3' : 'w-full'} bg-white shadow rounded-lg`}>
+              <div className="p-6">
+                {isReadOnly && (
+                  <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+                    This work is in read-only mode. {timeRemaining <= 0 ? 'The deadline has passed.' : 'Work has been submitted.'}
+                  </div>
+                )}
+
+                <QuillEditor
+                  value={content}
+                  onChange={setContent}
+                  readOnly={isReadOnly}
+                  style={{ height: '500px', marginBottom: '50px' }}
+                  placeholder={isReadOnly ? '' : 'Start writing your work here...'}
+                />
+              </div>
             </div>
           </div>
         </div>
