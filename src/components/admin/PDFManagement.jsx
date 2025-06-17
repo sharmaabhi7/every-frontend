@@ -202,19 +202,25 @@ const PDFManagement = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                            pdf.isActive 
-                              ? 'bg-green-100 text-green-800' 
+                            pdf.isActive
+                              ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'
                           }`}>
                             {pdf.isActive ? 'Active' : 'Inactive'}
                           </span>
                           <button
+                            onClick={() => window.open(`${import.meta.env.VITE_API_URL}/api/admin/pdfs/${pdf._id}/download`)}
+                            className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors"
+                          >
+                            📥 Download
+                          </button>
+                          <button
                             onClick={() => togglePDFStatus(pdf._id, pdf.isActive)}
-                            className={`px-3 py-1 text-sm rounded ${
-                              pdf.isActive 
-                                ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' 
+                            className={`px-3 py-1 text-sm rounded transition-colors ${
+                              pdf.isActive
+                                ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
                                 : 'bg-green-100 text-green-800 hover:bg-green-200'
                             }`}
                           >
@@ -222,7 +228,7 @@ const PDFManagement = () => {
                           </button>
                           <button
                             onClick={() => deletePDF(pdf._id, pdf.title)}
-                            className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded hover:bg-red-200"
+                            className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded hover:bg-red-200 transition-colors"
                           >
                             Delete
                           </button>

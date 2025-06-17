@@ -35,6 +35,34 @@ const PDFViewer = ({ isOpen, onClose, onStartWork }) => {
     onClose();
   };
 
+  const downloadPDF = async (pdf) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      // Use work endpoint for PDF downloads (accessible to all authenticated users)
+      const endpoint = `${import.meta.env.VITE_API_URL}/api/work/pdfs/${pdf._id}/download`;
+
+      const response = await axios.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+        responseType: 'blob'
+      });
+
+      // Create blob link to download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', pdf.originalName || `${pdf.title}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Failed to download PDF: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -96,6 +124,15 @@ const PDFViewer = ({ isOpen, onClose, onStartWork }) => {
                           <div className="text-xs text-gray-400 mt-1">
                             {(pdf.fileSize / 1024 / 1024).toFixed(2)} MB
                           </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              downloadPDF(pdf);
+                            }}
+                            className="mt-2 text-xs text-indigo-600 hover:text-indigo-800"
+                          >
+                            📥 Download
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -108,11 +145,19 @@ const PDFViewer = ({ isOpen, onClose, onStartWork }) => {
             <div className="flex-1 pl-4">
               {selectedPDF ? (
                 <div className="h-full flex flex-col">
-                  <div className="mb-4">
-                    <h4 className="font-medium text-gray-900">{selectedPDF.title}</h4>
-                    {selectedPDF.description && (
-                      <p className="text-sm text-gray-600 mt-1">{selectedPDF.description}</p>
-                    )}
+                  <div className="mb-4 flex justify-between items-start">
+                    <div>
+                      <h4 className="font-medium text-gray-900">{selectedPDF.title}</h4>
+                      {selectedPDF.description && (
+                        <p className="text-sm text-gray-600 mt-1">{selectedPDF.description}</p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => downloadPDF(selectedPDF)}
+                      className="px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                    >
+                      📥 Download
+                    </button>
                   </div>
                   <div className="flex-1 border border-gray-300 rounded-lg overflow-hidden">
                     <iframe

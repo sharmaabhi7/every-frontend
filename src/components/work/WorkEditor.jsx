@@ -200,6 +200,34 @@ const WorkEditor = () => {
     return `${days}d ${hours}h ${minutes}m`;
   };
 
+  const downloadPDF = async (pdf) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      // Use work endpoint for PDF downloads (accessible to all authenticated users)
+      const endpoint = `${import.meta.env.VITE_API_URL}/api/work/pdfs/${pdf._id}/download`;
+
+      const response = await axios.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+        responseType: 'blob'
+      });
+
+      // Create blob link to download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', pdf.originalName || `${pdf.title}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Failed to download PDF: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
   // Custom modules and formats are now handled in QuillEditor component
 
   if (loading) {
@@ -311,20 +339,42 @@ const WorkEditor = () => {
                         <div className="text-sm font-medium text-gray-900 truncate">
                           {pdf.title}
                         </div>
-                        <div className="text-xs text-gray-500">
-                          {(pdf.fileSize / 1024 / 1024).toFixed(2)} MB
+                        <div className="flex justify-between items-center">
+                          <div className="text-xs text-gray-500">
+                            {(pdf.fileSize / 1024 / 1024).toFixed(2)} MB
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              downloadPDF(pdf);
+                            }}
+                            className="text-xs text-indigo-600 hover:text-indigo-800"
+                          >
+                            📥 Download
+                          </button>
                         </div>
                       </button>
                     ))}
                   </div>
 
                   {selectedPDF && (
-                    <div className="border border-gray-300 rounded">
-                      <iframe
-                        src={`${import.meta.env.VITE_API_URL}/userpdf/${selectedPDF.filename}`}
-                        className="w-full h-96"
-                        title={selectedPDF.title}
-                      />
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className="font-medium text-gray-900">{selectedPDF.title}</h4>
+                        <button
+                          onClick={() => downloadPDF(selectedPDF)}
+                          className="px-2 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                        >
+                          📥 Download
+                        </button>
+                      </div>
+                      <div className="border border-gray-300 rounded">
+                        <iframe
+                          src={`${import.meta.env.VITE_API_URL}/userpdf/${selectedPDF.filename}`}
+                          className="w-full h-96"
+                          title={selectedPDF.title}
+                        />
+                      </div>
                     </div>
                   )}
 

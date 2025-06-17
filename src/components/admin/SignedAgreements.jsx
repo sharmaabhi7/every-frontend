@@ -4,15 +4,30 @@ import axios from 'axios';
 
 const SignedAgreements = () => {
   const [signedAgreements, setSignedAgreements] = useState([]);
+  const [filteredAgreements, setFilteredAgreements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedAgreement, setSelectedAgreement] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchSignedAgreements();
   }, []);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredAgreements(signedAgreements);
+    } else {
+      const filtered = signedAgreements.filter(agreement =>
+        agreement.userName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        agreement.userEmail?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        agreement.userMobileNumber?.includes(searchQuery)
+      );
+      setFilteredAgreements(filtered);
+    }
+  }, [signedAgreements, searchQuery]);
 
   const fetchSignedAgreements = async () => {
     try {
@@ -100,11 +115,38 @@ const SignedAgreements = () => {
             </div>
           )}
 
+          {/* Search Bar */}
+          <div className="mb-6 bg-white shadow rounded-lg p-4">
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <div className="flex-1 w-full">
+                <label htmlFor="search" className="sr-only">Search agreements</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <input
+                    id="search"
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Search by name, email, or mobile number..."
+                  />
+                </div>
+              </div>
+              <div className="text-sm text-gray-500">
+                {filteredAgreements.length} of {signedAgreements.length} agreements
+              </div>
+            </div>
+          </div>
+
           {/* Signed Agreements Table */}
           <div className="bg-white shadow overflow-hidden sm:rounded-md">
             <div className="px-4 py-5 sm:px-6">
               <h3 className="text-lg leading-6 font-medium text-gray-900">
-                All Signed Agreements ({signedAgreements.length})
+                Signed Agreements ({filteredAgreements.length})
               </h3>
             </div>
 
@@ -133,7 +175,7 @@ const SignedAgreements = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {signedAgreements.map((agreement) => (
+                  {filteredAgreements.map((agreement) => (
                     <tr key={agreement._id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
@@ -180,6 +222,16 @@ const SignedAgreements = () => {
                 </tbody>
               </table>
             </div>
+
+            {filteredAgreements.length === 0 && signedAgreements.length > 0 && (
+              <div className="text-center py-12">
+                <div className="text-gray-500">
+                  <div className="text-4xl mb-4">🔍</div>
+                  <h3 className="text-lg font-medium">No agreements match your search</h3>
+                  <p className="text-sm">Try adjusting your search terms.</p>
+                </div>
+              </div>
+            )}
 
             {signedAgreements.length === 0 && (
               <div className="text-center py-12">

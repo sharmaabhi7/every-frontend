@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import GlobalSearch from './GlobalSearch';
+import UniversalSearch from './UniversalSearch';
 import axios from 'axios';
 
 const AdminDashboard = () => {
@@ -70,18 +71,18 @@ const AdminDashboard = () => {
   };
 
   const StatCard = ({ title, value, color, icon }) => (
-    <div className="bg-white overflow-hidden shadow rounded-lg">
-      <div className="p-5">
+    <div className="bg-white overflow-hidden shadow-lg rounded-xl border border-gray-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+      <div className="p-6">
         <div className="flex items-center">
           <div className="flex-shrink-0">
-            <div className={`w-8 h-8 ${color} rounded-full flex items-center justify-center`}>
-              <span className="text-white font-bold">{icon}</span>
+            <div className={`w-12 h-12 ${color} rounded-xl flex items-center justify-center shadow-lg`}>
+              <span className="text-white text-xl">{icon}</span>
             </div>
           </div>
           <div className="ml-5 w-0 flex-1">
             <dl>
               <dt className="text-sm font-medium text-gray-500 truncate">{title}</dt>
-              <dd className="text-lg font-medium text-gray-900">{value}</dd>
+              <dd className="text-2xl font-bold text-gray-900 mt-1">{value}</dd>
             </dl>
           </div>
         </div>
@@ -117,26 +118,36 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
-      <header className="bg-white shadow">
+      <header className="bg-white shadow-lg border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center py-6 space-y-4 lg:space-y-0">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600">Welcome back, {user?.name}!</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Admin Dashboard
+              </h1>
+              <p className="text-gray-600 mt-1">Welcome back, {user?.name}!</p>
             </div>
 
-            {/* Global Search */}
-            <div className="flex-1 max-w-lg mx-8">
-              <GlobalSearch
-                onUserSelect={(user) => {
-                  // Navigate to user management with selected user
-                  navigate('/admin/users', { state: { selectedUser: user } });
+            {/* Universal Search */}
+            <div className="flex-1 max-w-2xl lg:mx-8">
+              <UniversalSearch
+                onResultSelect={(result, type) => {
+                  // Handle different result types
+                  if (type === 'user') {
+                    navigate('/admin/users', { state: { selectedUser: result } });
+                  } else if (type === 'agreement') {
+                    navigate('/admin/signed-agreements');
+                  } else if (type === 'pdf') {
+                    navigate('/admin/pdfs');
+                  } else if (type === 'work') {
+                    navigate(`/admin/edit-work/${result.userId._id}`);
+                  }
                 }}
               />
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-wrap items-center gap-2 lg:space-x-2">
               {/* Real-time connection status */}
               <div className="flex items-center space-x-2">
                 <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
@@ -203,39 +214,39 @@ const AdminDashboard = () => {
 
               <button
                 onClick={() => navigate('/admin/users')}
-                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium shadow-sm"
               >
-                Manage Users
+                👥 Users
               </button>
               <button
                 onClick={() => navigate('/admin/agreements')}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm"
               >
-                Manage Agreements
+                📝 Agreements
               </button>
               <button
                 onClick={() => navigate('/admin/signed-agreements')}
-                className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+                className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium shadow-sm"
               >
-                Signed Agreements
+                ✍️ Signatures
               </button>
               <button
                 onClick={() => navigate('/admin/site-config')}
-                className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                className="px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm font-medium shadow-sm"
               >
-                Site Config
+                ⚙️ Config
               </button>
               <button
                 onClick={() => navigate('/admin/pdfs')}
-                className="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
+                className="px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium shadow-sm"
               >
-                PDF Management
+                📄 PDFs
               </button>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm"
               >
-                Logout
+                🚪 Logout
               </button>
             </div>
           </div>
@@ -287,9 +298,9 @@ const AdminDashboard = () => {
           </div>
 
           {/* Tab Navigation */}
-          <div className="bg-white shadow rounded-lg mb-8">
+          <div className="bg-white shadow-lg rounded-xl mb-8 border border-gray-100">
             <div className="border-b border-gray-200">
-              <nav className="-mb-px flex space-x-8 px-6">
+              <nav className="-mb-px flex flex-wrap gap-2 px-6 py-2 overflow-x-auto">
                 {[
                   { id: 'overview', name: 'Overview', icon: '📊' },
                   { id: 'signed-agreements', name: 'Signed Agreements', icon: '📝' },
@@ -303,12 +314,12 @@ const AdminDashboard = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`${
                       activeTab === tab.id
-                        ? 'border-indigo-500 text-indigo-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2`}
+                        ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50'
+                    } whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center space-x-2 rounded-t-lg transition-all duration-200`}
                   >
                     <span>{tab.icon}</span>
-                    <span>{tab.name}</span>
+                    <span className="hidden sm:inline">{tab.name}</span>
                   </button>
                 ))}
               </nav>
@@ -765,6 +776,12 @@ const SubmittedWorkTable = ({ title, data, onRefresh }) => {
                   >
                     View Work
                   </button>
+                  <button
+                    onClick={() => window.open(`/admin/edit-work/${user._id}`, '_blank')}
+                    className="text-green-600 hover:text-green-900"
+                  >
+                    Edit Work
+                  </button>
                   {!user.isPenalized && (
                     <button
                       onClick={() => penalizeUser(user._id, user.name)}
@@ -808,7 +825,13 @@ const SubmittedWorkTable = ({ title, data, onRefresh }) => {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => window.open(`/admin/edit-work/${selectedWork.user.id}`, '_blank')}
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  Edit Work
+                </button>
                 <button
                   onClick={() => {
                     setShowWorkModal(false);

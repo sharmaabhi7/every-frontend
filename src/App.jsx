@@ -22,6 +22,7 @@ import AgreementManagement from './components/admin/AgreementManagement'
 import SignedAgreements from './components/admin/SignedAgreements'
 import SiteConfigManagement from './components/admin/SiteConfigManagement'
 import PDFManagement from './components/admin/PDFManagement'
+import AdminWorkEditor from './components/admin/AdminWorkEditor'
 
 // Landing Page
 import LandingPage from './components/landing/LandingPage'
@@ -144,6 +145,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['admin']}>
                   <PDFManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/edit-work/:userId"
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminWorkEditor />
                 </ProtectedRoute>
               }
             />
